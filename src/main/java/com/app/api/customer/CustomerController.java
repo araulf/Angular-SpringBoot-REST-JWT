@@ -38,12 +38,13 @@ public class CustomerController {
     @RequestParam(value = "country"  , required = false) String country,
     Pageable pageable
   ) {
+    System.out.println(company);      
       CustomerResponse resp = new CustomerResponse();
       Customer qry = new Customer();
       if (customerId != null) { qry.setId(customerId); }
       if (company != null)    { qry.setCompany(company); }
       if (country != null)    { qry.setCountry(country); }
-
+      System.out.println(qry);
       Page<Customer> pg = customerRepo.findAll(org.springframework.data.domain.Example.of(qry), pageable);
       resp.setPageStats(pg, true);
       resp.setItems(pg.getContent());
@@ -66,6 +67,18 @@ public class CustomerController {
         return resp;
     }
 
+    @ApiOperation(value = "List of customers", response = CustomerResponse.class)
+    @RequestMapping(value = "/customers/search", method = RequestMethod.GET)
+    public CustomerResponse getCustomersByFirstName(
+        @RequestParam(value = "name"  , required = true) String name
+    ) {
+        System.out.println(name);      
+        CustomerResponse resp = new CustomerResponse();
+        Customer qry = new Customer();
+        List<Customer> customers = customerRepo.findByFirstNameContainingOrLastNameContainingAllIgnoreCase(name, name);
+        resp.setItems(customers);
+        return resp;
+    }
 
     @ApiOperation(value = "Delete a customer", response = OperationResponse.class)
     @RequestMapping(value = "/customers/{customerId}", method = RequestMethod.DELETE, produces = {"application/json"})

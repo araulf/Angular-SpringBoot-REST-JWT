@@ -5,6 +5,9 @@
         the page initially loads 10 customer.
         When you scroll to bottom it loads another 10, till it loads all the 100 customer
     </p>
+    <br/>    
+    <input type="text" name="input" [(ngModel)]="input" placeholder="First or last name">
+    <button (click)="searchCustomers(input)" class="btn">Search</button>
     <br/>
     <ngx-datatable
         style='width:1000px;'

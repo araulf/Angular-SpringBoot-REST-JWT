@@ -55,6 +55,16 @@ export class CustomersComponent implements OnInit {
         }
     }
 
+    searchCustomers(query: string) {
+        console.log(query);
+        let me = this;
+            me.isLoading=true;
+            this.customerService.searchCustomers(query).subscribe((data) => {
+                me.rows = data.items;
+                me.isLoading=false;
+            });
+    }
+
     onScroll() {
         console.log("bottom")
         if (this.isLoading===false){

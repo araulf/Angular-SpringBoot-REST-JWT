@@ -8,6 +8,8 @@ import com.app.model.customer.*;
 
 public interface CustomerRepo extends JpaRepository<Customer, Integer> {
     public List<Customer> findAll();
+    public List<Customer> findByFirstName(String firstname);
+    List<Customer> findByFirstNameContainingOrLastNameContainingAllIgnoreCase(String firstname, String lastname);
     public Page<Customer> findAll(Pageable p);
     Customer save(Customer c);
     void delete(Customer c);
