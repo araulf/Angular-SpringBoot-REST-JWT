@@ -10,14 +10,13 @@ import { CustomerService } from '../../services/api/customer.service';
 
 export class CustomersComponent implements OnInit {
 
-
-
     columns:any[];
     rows:any[];
     pageSize:number=10;
     currentPage:number=0;
     isLastPageLoaded:boolean=false;
     isLoading:boolean=false;
+    searchQuery:string;
 
     constructor(private router: Router, private customerService: CustomerService) { }
 
