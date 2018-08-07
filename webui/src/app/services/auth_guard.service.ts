@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { UserInfoService } from './user-info.service';
 import { LoginService } from './api/login.service';
-import { Router, CanActivate, CanActivateChild,ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { Router, CanActivate, CanActivateChild, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 
 @Injectable()
 export class AuthGuard implements CanActivate, CanActivateChild {
@@ -14,6 +14,9 @@ export class AuthGuard implements CanActivate, CanActivateChild {
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
         let url: string = state.url;
+        if(url === '/home/customers' || url === '/home/orders'){
+            return this.userInfoService.getUserRole() === 'ADMIN';
+        }
         return this.checkLogin(url);
         //return true;
     }

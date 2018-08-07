@@ -62,6 +62,17 @@ export class UserInfoService {
         return "no-user";
     }
 
+    getUserRole():string{
+        let user = this.getUserInfo();
+        if(user) {
+            let jwtData = user.token.split('.')[1];
+            let decodedJwtJsonData = window.atob(jwtData)
+            let decodedJwtData = JSON.parse(decodedJwtJsonData)
+            return decodedJwtData.role
+        }
+        return "none";
+    }
+
     getStoredToken():string|null {
         let userObj:UserInStorage = this.getUserInfo();
         if (userObj !== null){
