@@ -2,13 +2,14 @@ import { Injectable, Inject } from '@angular/core';
 import { Observable, ReplaySubject, Subject } from 'rxjs';
 import { TranslateService } from './translate.service';
 import { ApiRequestService } from './api-request.service';
-import { HttpParams} from "@angular/common/http";
+import { HttpParams, HttpEvent, HttpRequest, HttpClient} from "@angular/common/http";
 
 @Injectable()
 export class ProductService {
     constructor(
         private apiRequest: ApiRequestService,
-        private translate:TranslateService
+        private translate:TranslateService,
+        private http: HttpClient
     ) {}
 
     getProducts(page?:number, size?:number): Observable<any> {
@@ -39,5 +40,17 @@ export class ProductService {
         return this.apiRequest.get('api/product-stats-by-quantity');
     }
 
+    pushFileToStorage(file: File): Observable<HttpEvent<{}>> {
+        return this.apiRequest.pushFileToStorage('api/product/uploadFile',file);
+    }
+     
+    getFiles(): Observable<any> {
+    return this.apiRequest.get('api/product/getallfiles')
+    }
 
+    downloadFile(filename: string): Observable<any>{
+        let params: HttpParams = new HttpParams();
+        params = params.append('filename', filename);
+        return this.apiRequest.getFile('api/product/files', params);
+    }
 }

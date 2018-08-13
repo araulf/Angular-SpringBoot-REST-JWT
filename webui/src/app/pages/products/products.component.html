@@ -1,5 +1,30 @@
 <div class="pad-16">
-
+    <h4>Files related to orders</h4>
+    <button class="btn btn-info-outline" *ngIf='showFile'
+	(click)='showFiles(false)'>Hide Files</button>
+ 
+    <button class="btn btn-info-outline" *ngIf='!showFile'
+        (click)='showFiles(true)'>Show Files</button>
+    
+    <div [hidden]="!showFile">
+        <ul *ngFor="let file of fileUploads | async">
+            <li class="btn btn-link" (click)="downloadFile(file)">{{file}}</li>
+        </ul>
+    </div>
+    <p></p>
+    <div *ngIf="currentFileUpload">
+            <div class="progress labeled">
+                <progress max="100" [value]="progress.percentage" data-displayval="0%"></progress>
+                <span>{{progress.percentage}}%</span>
+            </div>
+    </div>
+     
+    <button class="btn">
+        <input type="file" (change)="selectFile($event)">
+    </button>
+     
+    <button class="btn btn-success" [disabled]="!selectedFiles" (click)="upload()">Upload</button>
+    <p></p>
     <ngx-datatable
         style='width:1000px;'
         [rows]="rows"

@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpResponse, HttpRequest,  HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpResponse, HttpRequest,  HttpParams, HttpEvent } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable} from 'rxjs';
 import 'rxjs/add/operator/catch';
@@ -30,9 +30,30 @@ export class ApiRequestService {
         return headers;
     }
 
+    getHeadersForFileUpload():HttpHeaders {
+        let headers = new HttpHeaders();
+        let token = this.userInfoService.getStoredToken();
+        if (token !== null) {
+            headers = headers.append("Authorization", token);
+        }
+        return headers;
+    }
+
     get(url:string, urlParams?:HttpParams):Observable<any>{
         let me = this;
         return this.http.get(this.appConfig.baseApiPath + url, {headers:this.getHeaders(),  params:urlParams} )
+            .catch(function(error:any){
+                console.log("Some error in catch");
+                if (error.status === 401 || error.status === 403){
+                    me.router.navigate(['/logout']);
+                }
+                return Observable.throw(error || 'Server error')
+            });
+    }
+
+    getFile(url:string, urlParams?:HttpParams):Observable<any>{
+        let me = this;
+        return this.http.get(this.appConfig.baseApiPath + url, {headers:this.getHeaders(),  params:urlParams, responseType: 'blob'} )
             .catch(function(error:any){
                 console.log("Some error in catch");
                 if (error.status === 401 || error.status === 403){
@@ -52,6 +73,20 @@ export class ApiRequestService {
                 return Observable.throw(error || 'Server error')
             });
     }
+
+    pushFileToStorage(url:string, file: File): Observable<HttpEvent<{}>> {
+        let formdata: FormData = new FormData();
+     
+        formdata.append('file', file);
+     
+        const req = new HttpRequest('POST', this.appConfig.baseApiPath + url, formdata, {
+          headers:this.getHeadersForFileUpload(),
+          reportProgress: true,
+          responseType: 'text'
+        });
+     
+        return this.http.request(req);
+      }
 
     put(url:string, body:Object):Observable<any>{
         let me = this;

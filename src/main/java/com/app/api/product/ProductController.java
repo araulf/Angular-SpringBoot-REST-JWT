@@ -5,19 +5,23 @@ import io.swagger.annotations.*;
 import javax.servlet.http.*;
 import org.springframework.http.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.data.domain.*;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.ui.Model;
 //import static org.springframework.http.MediaType.*;
 import org.springframework.dao.DataIntegrityViolationException;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.lang.*;
 import com.app.api.*;
 import com.app.model.product.*;
 import com.app.repo.*;
+import com.app.services.StorageService;
 import com.app.model.response.*;
 import static com.app.model.response.OperationResponse.*;
 
@@ -28,6 +32,10 @@ public class ProductController {
 
     @Autowired private JdbcTemplate jdbcTemplate;
     @Autowired private ProductRepo productRepo;
+    @Autowired
+	StorageService storageService;
+ 
+	List<String> files = new ArrayList<String>();
 
     @ApiOperation(value = "List of products", response = ProductResponse.class)
     @RequestMapping(value = "/products", method = RequestMethod.GET)
@@ -84,6 +92,37 @@ public class ProductController {
         return resp;
     }
 
+    @PostMapping("/product/uploadFile")
+	public ResponseEntity<String> handleFileUpload(@RequestParam("file") MultipartFile file) {
+		String message = "";
+		try {
+			storageService.store(file);
+			files.add(file.getOriginalFilename());
+ 
+			message = "You successfully uploaded " + file.getOriginalFilename() + "!";
+			return ResponseEntity.status(HttpStatus.OK).body(message);
+		} catch (Exception e) {
+			message = "FAIL to upload " + file.getOriginalFilename() + "!" + e;
+			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(message);
+		}
+	}
 
-
+    @GetMapping("/product/getallfiles")
+	public ResponseEntity<List<String>> getListFiles(Model model) {
+		return ResponseEntity.ok().body(files);
+	}
+ 
+	@ApiOperation(value = "File", response = ResponseEntity.class)
+    @RequestMapping(value = "/product/files", method = RequestMethod.GET)
+	public ResponseEntity<Resource> getFile(
+            @RequestParam(value = "filename"  , required = true) String filename
+        ) 
+        {
+            System.out.println(filename);
+            Resource file = storageService.loadFile(filename);
+            System.out.println(file);        
+            return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
+				.body(file);
+	    }
 }

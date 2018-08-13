@@ -1,6 +1,8 @@
 import { Component, OnInit,TemplateRef, ViewChild } from '@angular/core';
 import { ProductService } from '../../services/api/product.service';
 import { Router } from '@angular/router';
+import { HttpResponse, HttpEventType } from '@angular/common/http';
+import { Observable, ReplaySubject, Subject } from 'rxjs';
 
 @Component({
 	selector: 's-products-pg',
@@ -15,7 +17,12 @@ export class ProductsComponent implements OnInit {
     //ngx-Datatable Variables
     columns:any[];
     rows:any[];
+    selectedFiles: FileList
+    currentFileUpload: File
+    progress: { percentage: number } = { percentage: 0 }
 
+    showFile = false
+    fileUploads: Observable<any>;
 
     constructor( private router: Router, private productService: ProductService) {}
     ngOnInit() {
@@ -41,5 +48,54 @@ export class ProductsComponent implements OnInit {
         });
     }
 
+    selectFile(event) {
+        this.showFile = false;      
+        this.selectedFiles = event.target.files;
+      }
+     
+      upload() {
+        this.progress.percentage = 0;
+     
+        this.currentFileUpload = this.selectedFiles.item(0)
+        this.productService.pushFileToStorage(this.currentFileUpload).subscribe(event => {
+          if (event.type === HttpEventType.UploadProgress) {
+            this.progress.percentage = Math.round(100 * event.loaded / event.total);
+          } else if (event instanceof HttpResponse) {
+            console.log('File is completely uploaded!');
+          }
+        })
+     
+        this.selectedFiles = undefined
+      }
+
+      showFiles(enable: boolean) {
+        this.showFile = enable
+     
+        if (enable) {
+          this.fileUploads = this.productService.getFiles();
+        }
+      }
+
+      downloadFile(file: any) {
+        console.log(file);
+        var filename = file.split('/').pop();
+        console.log(filename);
+        this.productService.downloadFile(filename).subscribe(res => {
+            console.log('start download:',res);
+            var url = window.URL.createObjectURL(res);
+            var a = document.createElement('a');
+            document.body.appendChild(a);
+            a.setAttribute('style', 'display: none');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            window.URL.revokeObjectURL(url);
+            a.remove(); // remove the element
+          }, error => {
+            console.log('download error:', JSON.stringify(error));
+          }, () => {
+            console.log('Completed file download.')
+        });
+      }
 
 }

@@ -1,5 +1,10 @@
 package com.app;
 
+import javax.annotation.Resource;
+
+import com.app.services.StorageService;
+
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -10,9 +15,18 @@ import org.springframework.transaction.annotation.*;
 @EnableJpaRepositories(basePackages ={ "com.app.repo"})
 @EntityScan(basePackages ={ "com.app.model"})
 @EnableTransactionManagement
-public class MainApp {
+public class MainApp implements CommandLineRunner {
+	@Resource
+	StorageService storageService;
+
 	public static void main(String[] args) throws Exception {
 		new SpringApplication(MainApp.class).run(args);
+	}
+
+	@Override
+	public void run(String... arg) throws Exception {
+		storageService.deleteAll();
+		storageService.init();
 	}
 }
 
