@@ -59,4 +59,15 @@ public class SessionController {
       return resp;
   }
 
+    @RequestMapping(value = "/session/user", method = RequestMethod.GET, produces = {"application/json"})
+    @ResponseBody
+    public UserResponse getUserInformation(@RequestParam(value = "name", required = false) String userIdParam, HttpServletRequest req) {
+        User user = userRepo.findOneByUserId(userIdParam).orElse(null);
+        UserResponse resp = new UserResponse();
+        resp.setData(user);
+        System.out.println(user);
+        System.out.println(resp);
+        return resp;
+    }
+
 }

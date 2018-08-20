@@ -7,6 +7,7 @@ bin/
 
 # WebUI Builds
 tmp/
+webui/dist
 
 # WebUI dependencies
 node_modules/

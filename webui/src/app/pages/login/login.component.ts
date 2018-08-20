@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { LoginService } from '../../services/api/login.service';
 import { Router } from '@angular/router';
+import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
+import { of } from 'rxjs/observable/of';
 
 @Component({
 	selector   : 's-login-pg',
@@ -11,13 +13,24 @@ import { Router } from '@angular/router';
 export class LoginComponent implements OnInit {
     model: any = {};
     errMsg:string = '';
+    registerUser = false;
+    registerForm: FormGroup;
+    submitted = false;
+
+
     constructor(
         private router: Router,
-        private loginService: LoginService) { }
+        private loginService: LoginService,
+        private formBuilder: FormBuilder
+    ) { }
 
     ngOnInit() {
         // reset login status
         this.loginService.logout(false);
+        this.registerForm = this.formBuilder.group({
+            username: ['',[Validators.required, Validators.minLength(4)],[this.checkUsernameAvailable.bind(this)]],
+            password: ['',[Validators.required, Validators.minLength(4)]]
+        })
     }
 
     login() {
@@ -51,5 +64,31 @@ export class LoginComponent implements OnInit {
       this.router.navigate(['signup']);
     }
 
+    checkUsernameAvailable(control: AbstractControl) {
+        console.log(control.value);
+        return of(null);
+        // return this.loginService.checkUsernameAvailable(control.value).then(res => {
+        //     console.log(res);
+        //   return res ? null : { usernameTaken: true };
+        // });
+      }
 
+    get f() { return this.registerForm.controls; }
+
+    onRegisterSubmit(){
+        this.submitted = true;
+        console.log("Register submitted", this.f.username.errors, this.registerForm.status);
+        // return this.loginService.registerUser(control.value).then(res => {
+        //     console.log(res);
+        // });
+    }
+
+    showRegistrationScreen(){
+        this.registerUser = true;
+    }
+
+    showLoginScreen(){
+        this.submitted = false;        
+        this.registerUser = false;
+    }
 }

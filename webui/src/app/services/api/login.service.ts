@@ -6,6 +6,7 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import { UserInfoService, LoginInfoInStorage} from '../user-info.service';
 import { ApiRequestService } from './api-request.service';
+import { HttpParams } from '@angular/common/http';
 
 export interface LoginRequestParam{
     username:string;
@@ -81,6 +82,17 @@ export class LoginService {
             });
 
             return loginDataSubject;
+    }
+
+    async checkUsernameAvailable(username) {
+        let params: HttpParams = new HttpParams();
+        params = params.append('username', username);
+        this.apiRequest.get('session/user',params).subscribe(res => {
+            console.log(res);
+            if(res.name){
+                return true;
+            }
+        });
     }
 
     logout(navigatetoLogout=true): void {
