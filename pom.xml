@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.mrin</groupId>
 	<artifactId>app</artifactId>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 	<version>1.0.0</version>
     <name>Order Processing</name>
 	<properties>
@@ -96,7 +96,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-tomcat</artifactId>
-			<!--<scope>provided</scope>-->
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
     		<groupId>org.springframework.boot</groupId>
@@ -158,7 +158,7 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>23.5-jre</version>
+			<version>24.1-jre</version>
 		</dependency>
 		<dependency>
 			<groupId>joda-time</groupId>
@@ -183,7 +183,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.16.18</version>
+			<version>1.18.2</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
