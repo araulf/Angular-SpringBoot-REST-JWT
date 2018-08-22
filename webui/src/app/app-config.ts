@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { environment } from 'environments/environment';
 
 /**
  * This is a singleton class
@@ -13,7 +14,7 @@ export class AppConfig {
     public dateFormat     = { year:'numeric', month: 'short', day: 'numeric'};
 
     // API Related configs
-    public apiPort:string = "9119";
+    public apiPort:string = environment.port;
     public apiProtocol:string;
     public apiHostName:string;
     public baseApiPath:string;
@@ -32,7 +33,7 @@ export class AppConfig {
             this.baseApiPath = this.apiProtocol + "//" + this.apiHostName + "/";
         }
         else{
-            this.baseApiPath = this.apiProtocol + "//" + this.apiHostName + ":" + this.apiPort +"/";
+            this.baseApiPath = this.apiProtocol + "//" + this.apiHostName + ":" + this.apiPort +"/"+environment.baseHref;
         }
         if (this.locale===undefined){
             this.locale = navigator.language;

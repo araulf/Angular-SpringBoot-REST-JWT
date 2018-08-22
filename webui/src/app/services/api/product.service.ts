@@ -37,20 +37,24 @@ export class ProductService {
 
 
     getProductStatsByQuantityOrdered(): Observable<any> {
-        return this.apiRequest.get('api/product-stats-by-quantity');
+        const url = 'api/product-stats-by-quantity';
+        return this.apiRequest.get(url);
     }
 
     pushFileToStorage(file: File): Observable<HttpEvent<{}>> {
-        return this.apiRequest.pushFileToStorage('api/product/uploadFile',file);
+        const url = 'api/product/uploadFile';
+        return this.apiRequest.pushFileToStorage(url,file);
     }
      
     getFiles(): Observable<any> {
-    return this.apiRequest.get('api/product/getallfiles')
+      const url = 'api/product/getallfiles';
+      return this.apiRequest.get(url)
     }
 
     downloadFile(filename: string): Observable<any>{
         let params: HttpParams = new HttpParams();
         params = params.append('filename', filename);
-        return this.apiRequest.getFile('api/product/files', params);
+        const url = 'api/product/files';
+        return this.apiRequest.getFile(url, params);
     }
 }
